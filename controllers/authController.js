@@ -69,7 +69,7 @@ module.exports = {
       }
 
       const token = jwt.sign(
-        { id: user.id, role: user.role },
+        { id: user.id, name: user.name, email: user.email, role: user.role },
         configAuth.jwt_secret,
         { expiresIn: '1d' }
       );
@@ -119,6 +119,22 @@ module.exports = {
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: 'An internal server error occurred' });
+    }
+  },
+  logout: async (req, res) => {
+    localStorage.removeItem('token');
+    req.session.destroy((err) => {
+      if (err) return res.status(400).json({ msg: 'Tidak dapat logout' });
+      res.status(200).json({ msg: 'Anda telah logout' });
+    });
+  },
+  me: async (req, res) => {
+    const { token } = req.body;
+    try {
+      let { id, name, email, role } = jwt.verify(token, configAuth.jwt_secret);
+      res.status(200).json({ id, name, email, role });
+    } catch (error) {
+      res.status(400).json({ message: error.message });
     }
   },
 };
