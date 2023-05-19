@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Users', {
+    await queryInterface.createTable('Events', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -11,23 +11,28 @@ module.exports = {
       },
       name: {
         type: Sequelize.STRING,
-        allowNull: false,
       },
-      email: {
+      location: {
         type: Sequelize.STRING,
-        allowNull: false,
       },
-      password: {
+      date: {
+        type: Sequelize.DATE,
+      },
+      poster: {
         type: Sequelize.STRING,
-        allowNull: false
       },
-      role: {
-        type: Sequelize.ENUM('admin', 'user', 'musisi', 'event_organizer'),
-        defaultValue: 'user',
+      status: {
+        type: Sequelize.ENUM('Audisi', 'Live'),
       },
-      isVerified: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: false,
+      userId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Users',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
       },
       createdAt: {
         allowNull: false,
@@ -40,6 +45,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Users');
+    await queryInterface.dropTable('Events');
   },
 };
