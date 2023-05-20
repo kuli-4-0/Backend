@@ -23,7 +23,7 @@ module.exports = {
           date: new Date('2023-05-20'),
           poster: 'admin.jpg',
           status: 'Live',
-          userId: 4,
+          userId: 1,
           createdAt: new Date(),
           updatedAt: new Date(),
         },
