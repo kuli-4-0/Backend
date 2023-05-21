@@ -2,51 +2,81 @@
 
 ## Elise API
 
+## postman documentation
+
+https://documenter.getpostman.com/view/18941111/2s93m1YPB1
+
+## postman environment
+
+download capstone.postman_envronment.json
+
 # API Spesification Elise
 
 ```
-URL
+https://elise-project.onrender.com
 ```
 
-## RUN
+sample data admin
 
 ```
-npm i
+email : admin@gmail.com
+pass : 1234
 ```
+
 ```
-npm run migrate:up
+email : user@gmail.com
+pass : 1234
 ```
+
 ```
-npm run migrate:seed:up
+email : event_organizer@gmail.com
+pass : 1234
+```
+
+```
+email : musisi@gmail.com
+pass : 1234
 ```
 
 ---
 
 ## 1. Auth
 
-### `POST` Register
+### `POST` Register as user
 
 ```
-/register
+/auth/register
 ```
 
 ### Body raw (json)
 
 ```json
 {
-  "name": "john doe",
-  "email": "john@gmail.com",
-  "password": "john",
-  "confirmPassword": "john"
+  "name": "Muhammad Dewi Susanto",
+  "email": "c006dsx0616@bangkit.academy",
+  "password": "dwisusanto784@#$#@",
+  "confirmPassword": "dwisusanto784@#$#@"
 }
 ```
 
-> menambahkan user baru dengan role `user` dan profile img `default.jpg`
+### `POST` Resend Verify
+
+```
+/auth/resendverify
+```
+
+### Body raw (json)
+
+```json
+{
+  "email": "c006dsx0616@bangkit.academy"
+}
+```
 
 ### `POST` Login
 
 ```
-/login
+/auth/login
 ```
 
 ### Body raw (json)
@@ -54,7 +84,7 @@ npm run migrate:seed:up
 ```json
 {
   "email": "admin@gmail.com",
-  "password": "admin"
+  "password": "1234"
 }
 ```
 
@@ -113,7 +143,7 @@ Bodyraw (json)
   "name": "admin",
   "email": "admin@gmail.com",
   "password": "admin",
-  "role": "admin" // enum (user / admin)
+  "role": "admin" // enum (admin / user / event_organizer / musisi)
 }
 ```
 
@@ -140,246 +170,66 @@ Bodyraw (json)
 /users/<userId>
 ```
 
-### `Patch` update img profile
-
-Body form-data
-
-```
-/users/updateprofilepicture
-```
-
-> 'Content-type': 'multipart/form-data' dengan key `file`
-
-## 3. Blog
+## 3. Event
 
 > > BLOG
 
-### `GET` all Blog
+### `GET` all Event (admin only)
 
 ```
-/blog
+/events
 ```
 
-### `GET` blog by id
+### `GET` Event by id
 
 ```
-/blog/:id
+/events/:id
 ```
 
-### `POST` blog **HANYA ADMIN**
+### `GET` Event by userId (event_organizer only)
 
 ```
-/blog
+/events/:id
+```
+
+### `POST` Event
+
+```
+/events
 ```
 
 ```JSON
 body-raw (JSON)
 {
-"image" : "gambar2.jpg",
-"title" : "ini judul2",
-"subTitle" : "ini subTitle2",
-"description" : "ini description2",
-"createdBy" : "637df1bff73d4c3f5d47eaf8"
+"name" : "name event",
+"location" : "location event",
+"date" : "10-10-1970",
+"poster" : "poster.jpg", (type file : jpg, jpeg, png)
+"status" : "Live" (enum : Live / Audisi)
 }
 ```
 
-### `PATCH ` blog by id **HANYA ADMIN**
+### `PATCH ` Event by id
 
 ```
-/blog/:id
+/events/:id
 ```
 
 ```JSON
 body-raw (JSON)
 {
-"image" : "gambar2.jpg",
-"title" : "ini judul2",
-"subTitle" : "ini subTitle2",
-"description" : "ini description2",
-"createdBy" : "637df1bff73d4c3f5d47eaf8"
+"name" : "name event",
+"location" : "location event",
+"date" : "10-10-1970",
+"poster" : "poster.jpg", (type file : jpg, jpeg, png)
+"status" : "Live" (enum : Live / Audisi)
 }
 ```
 
 bisa edit salah satu
 
-### `DELETE` blog by id **HANYA ADMIIN**
+### `DELETE` Event by id
 
 ```
-/blog/:id
-```
-
-> > BLOG COMMENT
-
-### `POST` comment
-
-```
-/blog/:id/comment
-```
-
-body-raw (JSON)
-
-```JSON
-{
-"content" : "cek komen",
-"postedBy" : "637df1bff73d4c3f5d47eaf8"
-}
-```
-
-### `GET` comment by id blog
-
-```
-/blog/:id/comment
-```
-
-### `DELETE` comment by id
-
-```
-/blog/:id/comment/:idComment
-```
-
-## 4. Video
-
-> > VIDEO
-
-### `GET` all video
-
-```
-/video
-```
-
-### `GET` video by id
-
-```
-/video/:id
-```
-
-### `POST` video **HANYA ADMIN**
-
-```
-/video
-```
-
-```JSON
-body-raw (JSON)
-{
-  "videoId": "ini adalah videoId",
-  "judul": "ini adalah judul",
-  "deskripsi": "ini adalah deskripsi"
-}
-```
-
-### `PATCH ` video by id **HANYA ADMIN**
-
-```
-/video/:id
-```
-
-```JSON
-body-raw (JSON)
-{
-  "videoId": "masukkan id video yang akan diupdate",
-  "judul": "masukkan judul yang akan diupdate",
-  "deskripsi": "masukkan deskripsi yang akan diupdate"
-}
-```
-
-karena menggunakan patch, data yang diedit bisa salah satu saja.
-
-### `DELETE` video by id **HANYA ADMIIN**
-
-```
-/video/:id
-```
-
-> > VIDEO COMMENT
-
-### `POST` comment
-
-```
-/video/:id/comment
-```
-
-body-raw (JSON)
-
-```JSON
-{
-  "commentContent": "ini adalah isi comment",
-  "postedBy": "ini adalah id user"
-}
-```
-
-### `GET` comment by id video
-
-```
-/video/:id/comment
-```
-
-### `DELETE` comment by id video
-
-```
-/video/:id/comment/:idComment
-```
-
-## 5. FAQ
-
-### `GET` get FAQs
-
-```
-/faq
-```
-
-###### `limit and page`
-
-```
-/faq?limit=1&page=1
-```
-
-> Dapat menyeting berapa jumlah data yang ingin ditampilkan
-
-###### `filtering question`
-
-```
-/faq?question=<question_value>
-```
-
-> anda bisa memakai opsi di atas
-
-```
-/faq?limit=1&page=5&question=example
-```
-
-### `POST` create FAQ
-
-```
-/faq
-```
-
-Body raw (json)
-
-```json
-{
-  "question": "testing pertanyaan10",
-  "answer": "testing jawaban"
-}
-```
-
-### `PATCH` create FAQ
-
-```
-/faq/<faqId>
-```
-
-Body raw (json)
-
-```json
-{
-  "question": "testing pertanyaan10",
-  "answer": "testing jawaban"
-}
-```
-
-### `DELETE` delete FAQ
-
-```
-/faq/<faqId>
+/events/:id
 ```
