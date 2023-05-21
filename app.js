@@ -3,6 +3,8 @@ const allRouter = require('./routes');
 const path = require('path');
 
 require('dotenv').config();
+
+
 const app = express();
 
 // Mengatur direktori public
