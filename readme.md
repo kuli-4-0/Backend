@@ -21,6 +21,8 @@ https://elise-project.onrender.com
 ## API via cloud run (sisa free trial 24 days dari tanggal 22 may)
 
 ```
+https://elise-project.mdwisu.shop/
+--
 https://backend-brcxr6bfxq-uc.a.run.app
 ```
 
