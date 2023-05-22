@@ -14,4 +14,7 @@ RUN npm install
 COPY . .
 
 # Menjalankan perintah untuk menjalankan aplikasi saat container dijalankan
-CMD [ "npm", "start:prod" ]
+CMD [ "npm", "run", "start:prod" ]
+
+# Menentukan port yang akan diexpose dari container
+EXPOSE 5000
