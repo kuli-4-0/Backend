@@ -18,7 +18,7 @@ download capstone.postman_envronment.json
 https://elise-project.onrender.com
 ```
 
-## API via cloud run (sisa 24days dari tanggal 22 may)
+## API via cloud run (sisa free trial 24 days dari tanggal 22 may)
 
 ```
 https://backend-brcxr6bfxq-uc.a.run.app
