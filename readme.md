@@ -12,8 +12,16 @@ download capstone.postman_envronment.json
 
 # API Spesification Elise
 
+## API via render
+
 ```
 https://elise-project.onrender.com
+```
+
+## API via cloud run (sisa 24days dari tanggal 22 may)
+
+```
+https://backend-brcxr6bfxq-uc.a.run.app
 ```
 
 sample data admin
