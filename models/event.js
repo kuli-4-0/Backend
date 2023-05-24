@@ -10,6 +10,8 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Event.belongsTo(models.User, { foreignKey: 'userId' });
+      Event.hasOne(models.AuditionEvent, { foreignKey: 'eventId' });
+      Event.hasOne(models.LiveEvent, { foreignKey: 'eventId' });
     }
   }
   Event.init(
