@@ -1,12 +1,26 @@
 const db = require('../models');
 const Event = db.Event;
+const AuditionEvent = db.AuditionEvent;
+const LiveEvent = db.LiveEvent;
 const path = require('path');
 const fs = require('fs');
 
 module.exports = {
   getAllEvents: async (req, res) => {
     try {
-      const events = await Event.findAll();
+      const events = await Event.findAll({
+        include: [
+          {
+            model: AuditionEvent,
+            required: false,
+          },
+          {
+            model: LiveEvent,
+            required: false,
+          },
+        ],
+      });
+
       res.status(200).json({ data: events });
     } catch (error) {
       console.error(error);
@@ -16,7 +30,12 @@ module.exports = {
   getEventById: async (req, res) => {
     try {
       const { id } = req.params;
-      const event = await Event.findOne({ where: { id } });
+
+      const event = await Event.findOne({
+        where: { id },
+        include: [AuditionEvent, LiveEvent],
+      });
+
       if (!event) {
         res.status(404).json({ error: 'Event not found' });
       } else {
@@ -35,7 +54,10 @@ module.exports = {
         return res.status(401).json({ error: 'Unauthorized access' });
       }
 
-      const events = await Event.findAll({ where: { userId } });
+      const events = await Event.findAll({
+        where: { userId },
+        include: [AuditionEvent, LiveEvent],
+      });
 
       if (events.length === 0) {
         return res.status(404).json({ msg: 'No events found for the user' });
@@ -50,10 +72,10 @@ module.exports = {
     try {
       const { name, location, date, poster, status } = req.body;
       const userId = req.user.id; // Assume authenticated user's ID is stored in req.user.id
+      let type = status;
 
       // Validasi ukuran file poster
       const posterFile = req.file;
-      console.log(posterFile);
       if (!posterFile) {
         return res.status(400).json({ error: 'Poster file is required' });
       }
@@ -85,7 +107,44 @@ module.exports = {
         userId,
       });
 
-      res.status(201).json({ data: event });
+      if (type === 'Audisi') {
+        const {
+          startDate,
+          endDate,
+          auditionNeeds,
+          salary,
+          requirements,
+          genre,
+          numberOfMusicians,
+          auditionStatus,
+        } = req.body;
+
+        const auditionEvent = await AuditionEvent.create({
+          startDate,
+          endDate,
+          auditionNeeds,
+          salary,
+          requirements,
+          genre,
+          numberOfMusicians,
+          auditionStatus,
+          eventId: event.id,
+        });
+
+        res.status(201).json({ data: { event, auditionEvent } });
+      } else if (type === 'Live') {
+        const { eventDate, ticketPrice, eventsCapacity, liveStatus } = req.body;
+
+        const liveEvent = await LiveEvent.create({
+          eventDate,
+          ticketPrice,
+          eventsCapacity,
+          liveStatus,
+          eventId: event.id,
+        });
+
+        res.status(201).json({ data: { event, liveEvent } });
+      }
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Failed to create event' });
@@ -95,6 +154,7 @@ module.exports = {
     try {
       const { name, location, date, status } = req.body;
       const { id } = req.params;
+      let type = status;
 
       const userId = req.user.id; // Assume authenticated user's ID is stored in req.user.id
 
@@ -149,7 +209,42 @@ module.exports = {
       event.status = status;
       await event.save();
 
-      res.status(200).json({ data: event });
+      if (type === 'Audisi') {
+        const {
+          startDate,
+          endDate,
+          auditionNeeds,
+          salary,
+          requirements,
+          genre,
+          numberOfMusicians,
+          auditionStatus,
+        } = req.body;
+
+        const auditionEvent = await AuditionEvent.create({
+          startDate,
+          endDate,
+          auditionNeeds,
+          salary,
+          requirements,
+          genre,
+          numberOfMusicians,
+          auditionStatus,
+          eventId: event.id,
+        });
+        res.status(200).json({ data: { event, auditionEvent } });
+      } else if (type === 'Live') {
+        const { eventDate, ticketPrice, eventsCapacity, liveStatus } = req.body;
+
+        const liveEvent = await LiveEvent.create({
+          eventDate,
+          ticketPrice,
+          eventsCapacity,
+          liveStatus,
+          eventId: event.id,
+        });
+        res.status(200).json({ data: { event, liveEvent } });
+      }
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Failed to update event' });
@@ -179,6 +274,10 @@ module.exports = {
 
       // Hapus event dari database
       await event.destroy();
+
+      // Hapus juga data terkait dari tabel AuditionEvent dan LiveEvent (jika ada)
+      await AuditionEvent.destroy({ where: { eventId: id } });
+      await LiveEvent.destroy({ where: { eventId: id } });
 
       res.status(200).json({ message: 'Event deleted successfully' });
     } catch (error) {
