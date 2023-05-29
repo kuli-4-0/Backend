@@ -32,7 +32,7 @@ module.exports = {
           location: 'Event Admin Location',
           date: new Date('2023-05-20'),
           poster: 'admin.jpg',
-          status: 'audition',
+          status: 'Audition',
           userId: 1,
           createdAt: new Date(),
           updatedAt: new Date(),
