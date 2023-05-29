@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       Event.belongsTo(models.User, { foreignKey: 'userId' });
       Event.hasOne(models.AuditionEvent, { foreignKey: 'eventId' });
       Event.hasOne(models.LiveEvent, { foreignKey: 'eventId' });
+      Event.hasMany(models.AuditionRegistration, { foreignKey: 'eventId' });
     }
   }
   Event.init(
@@ -20,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
       location: DataTypes.STRING,
       date: DataTypes.DATE,
       poster: DataTypes.STRING,
-      status: DataTypes.ENUM('Audisi', 'Live'),
+      status: DataTypes.ENUM('Audition', 'Live'),
       userId: DataTypes.INTEGER,
     },
     {
