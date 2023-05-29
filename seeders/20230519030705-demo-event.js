@@ -32,7 +32,7 @@ module.exports = {
           location: 'Event Admin Location',
           date: new Date('2023-05-20'),
           poster: 'admin.jpg',
-          status: 'Live',
+          status: 'audition',
           userId: 1,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -52,7 +52,7 @@ module.exports = {
           location: 'Event Organizer Location',
           date: new Date('2023-05-20'),
           poster: 'event.jpg',
-          status: 'Live',
+          status: 'Audition',
           userId: 4,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -61,7 +61,7 @@ module.exports = {
       {}
     );
   },
-  
+
   async down(queryInterface, Sequelize) {
     await queryInterface.bulkDelete('Events', null, {});
     await resetAutoIncrement(queryInterface);
