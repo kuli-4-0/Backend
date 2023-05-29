@@ -1,11 +1,14 @@
 const express = require('express');
 const allRouter = require('./routes');
 const path = require('path');
+const cors = require('cors')
 
 require('dotenv').config();
 
 
 const app = express();
+ 
+app.use(cors())
 
 // Mengatur direktori public
 app.use(express.static(path.join(__dirname, 'public')));
