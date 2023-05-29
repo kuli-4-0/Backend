@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Events', {
+    await queryInterface.createTable('AuditionRegistrations', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -19,20 +19,24 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
       },
-      name: {
+      auditionEventId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'AuditionEvents',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+      },
+      description: {
         type: Sequelize.STRING,
       },
-      location: {
-        type: Sequelize.STRING,
-      },
-      date: {
-        type: Sequelize.DATE,
-      },
-      poster: {
+      photo: {
         type: Sequelize.STRING,
       },
       status: {
-        type: Sequelize.ENUM('Audition', 'Live'),
+        type: Sequelize.ENUM('being_selected', 'accepted', 'rejected'),
       },
       createdAt: {
         allowNull: false,
@@ -45,6 +49,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Events');
+    await queryInterface.dropTable('AuditionRegistrations');
   },
 };
