@@ -8,16 +8,32 @@ const {
   updateEvent,
   deleteEvent,
   getEventByUserId,
+  getAllLiveEvents,
 } = require('../controllers/eventController.js');
+const { verifyToken, authorizeRoles } = require('../middleware/authUser.js');
 const {
-  authorizeEventOrganizer,
-  authorizeAdmin,
-  verifyToken,
-  authorizeRoles,
-} = require('../middleware/authUser.js');
+  createAuditionRegistration,
+} = require('../controllers/auditionRegistration.js');
 const router = express.Router();
 
-router.get('/', verifyToken, authorizeRoles(['admin']), getAllEvents);
+router.get(
+  '/',
+  verifyToken,
+  authorizeRoles(['admin', 'event_organizer', 'user']),
+  getAllEvents
+);
+router.get(
+  '/live',
+  verifyToken,
+  authorizeRoles(['admin', 'event_organizer', 'user']),
+  getAllLiveEvents
+);
+router.get(
+  '/audition',
+  verifyToken,
+  authorizeRoles(['admin', 'event_organizer']),
+  getAllEvents
+);
 router.get('/:id', verifyToken, authorizeRoles(['admin']), getEventById);
 router.get(
   '/user/:userId',
@@ -29,8 +45,15 @@ router.post(
   '/',
   verifyToken,
   authorizeRoles(['admin', 'event_organizer']),
-  upload.single('poster'),
+  upload.single('poster_event'),
   createEvent
+);
+router.post(
+  '/:auditionEventId/audition-registrations',
+  verifyToken,
+  authorizeRoles(['admin', 'event_organizer']),
+  upload.single('photo'),
+  createAuditionRegistration
 );
 router.patch(
   '/:id',

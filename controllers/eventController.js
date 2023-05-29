@@ -27,6 +27,55 @@ module.exports = {
       res.status(500).json({ error: 'Failed to fetch events' });
     }
   },
+  getAllLiveEvents: async (req, res) => {
+    try {
+      const events = await Event.findAll({
+        include: [
+          {
+            model: AuditionEvent,
+            required: false,
+          },
+          {
+            model: LiveEvent,
+            required: false,
+          },
+        ],
+        where: {
+          status: 'Live', // Menambahkan kondisi status
+        },
+      });
+
+      res.status(200).json({ data: events });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  },
+  getAllAuditionEvents: async (req, res) => {
+    try {
+      const events = await Event.findAll({
+        include: [
+          {
+            model: AuditionEvent,
+            required: false,
+          },
+          {
+            model: LiveEvent,
+            required: false,
+          },
+        ],
+        where: {
+          status: 'Live', // Menambahkan kondisi status
+        },
+      });
+
+      res.status(200).json({ data: events });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  },
+
   getEventById: async (req, res) => {
     try {
       const { id } = req.params;
@@ -70,7 +119,7 @@ module.exports = {
   },
   createEvent: async (req, res) => {
     try {
-      const { name, location, date, poster, status } = req.body;
+      const { name, location, date, status } = req.body;
       const userId = req.user.id; // Assume authenticated user's ID is stored in req.user.id
       let type = status;
 
@@ -93,9 +142,17 @@ module.exports = {
       const timestamp = Date.now();
       const uniqueId = Math.round(Math.random() * 1e9);
       // Pindahkan file poster ke direktori yang diinginkan
-      const destinationDir = path.join(__dirname, '../public');
+      // Define the destination folder path
+      const destinationDir = path.join(__dirname, '../public/poster-event');
+
       const newFileName = `poster-${timestamp}-${uniqueId}${fileExt}`;
       const newPath = path.join(destinationDir, newFileName);
+      // Check if the destination folder exists
+      if (!fs.existsSync(destinationDir)) {
+        // Create the destination folder if it doesn't exist
+        fs.mkdirSync(destinationDir, { recursive: true });
+      }
+      // Move the file to the destination folder
       fs.renameSync(posterFile.path, newPath);
 
       const event = await Event.create({
