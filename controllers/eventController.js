@@ -164,7 +164,7 @@ module.exports = {
         userId,
       });
 
-      if (type === 'Audisi') {
+      if (type === 'Audition') {
         const {
           startDate,
           endDate,
@@ -266,7 +266,7 @@ module.exports = {
       event.status = status;
       await event.save();
 
-      if (type === 'Audisi') {
+      if (type === 'Audition') {
         const {
           startDate,
           endDate,
