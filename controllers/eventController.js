@@ -27,30 +27,6 @@ module.exports = {
       res.status(500).json({ error: 'Failed to fetch events' });
     }
   },
-  getAllLiveEvents: async (req, res) => {
-    try {
-      const events = await Event.findAll({
-        include: [
-          {
-            model: AuditionEvent,
-            required: false,
-          },
-          {
-            model: LiveEvent,
-            required: false,
-          },
-        ],
-        where: {
-          status: 'Live', // Menambahkan kondisi status
-        },
-      });
-
-      res.status(200).json({ data: events });
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  },
   getAllAuditionEvents: async (req, res) => {
     try {
       const events = await Event.findAll({
@@ -340,6 +316,56 @@ module.exports = {
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Failed to delete event' });
+    }
+  },
+  // !live event
+
+  getAllLiveEvents: async (req, res) => {
+    try {
+      const events = await Event.findAll({
+        include: [
+          {
+            model: AuditionEvent,
+            required: false,
+          },
+          {
+            model: LiveEvent,
+            required: false,
+          },
+        ],
+        where: {
+          status: 'Live', // Menambahkan kondisi status
+        },
+      });
+
+      res.status(200).json({ data: events });
+    } catch (error) {
+      console.log(error);
+      console.log(error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  },
+  getLiveEventsById: async (req, res) => {
+    const { eventId } = req.params;
+    try {
+      const events = await Event.findAll({
+        include: [
+          {
+            model: AuditionEvent,
+            required: false,
+          },
+          {
+            model: LiveEvent,
+            required: false,
+          },
+        ],
+        where: { id: eventId },
+      });
+
+      res.status(200).json({ data: events });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: 'Internal server error' });
     }
   },
 };
