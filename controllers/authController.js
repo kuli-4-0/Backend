@@ -65,7 +65,7 @@ module.exports = {
       const isMatch = await bcrypt.compare(password, user.password);
 
       if (!isMatch) {
-        return res.status(401).json({ message: 'Invalid email or password' });
+        return res.status(401).json({ error: 'Invalid email or password' });
       }
 
       const token = jwt.sign(
@@ -78,8 +78,8 @@ module.exports = {
     } catch (err) {
       console.error(err);
       res.status(500).json({
-        message: 'An internal server error occurred',
-        error: err.message,
+        error: 'An internal server error occurred',
+        message: err.message,
       });
     }
   },
