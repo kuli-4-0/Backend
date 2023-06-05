@@ -9,13 +9,21 @@ const {
   deleteEvent,
   getEventByUserId,
   getAllLiveEvents,
+  getLiveEventsById,
 } = require('../controllers/eventController.js');
 const { verifyToken, authorizeRoles } = require('../middleware/authUser.js');
 const {
   createAuditionRegistration,
 } = require('../controllers/auditionRegistration.js');
+const {
+  createLiveRegistration,
+  getAllLiveRegistrationsByUserId,
+} = require('../controllers/liveRegistration.js');
+const { testRoute } = require('../controllers/userController.js');
+
 const router = express.Router();
 
+// Event routes
 router.get(
   '/',
   verifyToken,
@@ -23,10 +31,28 @@ router.get(
   getAllEvents
 );
 router.get(
+  '/live/live-registrations/:userId',
+  verifyToken,
+  authorizeRoles(['admin', 'event_organizer', 'user']),
+  getAllLiveRegistrationsByUserId
+);
+router.get(
+  '/live/:eventId',
+  verifyToken,
+  authorizeRoles(['admin', 'event_organizer', 'user']),
+  getLiveEventsById
+);
+router.get(
   '/live',
   verifyToken,
   authorizeRoles(['admin', 'event_organizer', 'user']),
   getAllLiveEvents
+);
+router.post(
+  '/live/:eventId/live-registrations',
+  verifyToken,
+  authorizeRoles(['admin', 'event_organizer', 'user']),
+  createLiveRegistration
 );
 router.get(
   '/audition',
@@ -34,13 +60,13 @@ router.get(
   authorizeRoles(['admin', 'event_organizer']),
   getAllEvents
 );
-router.get('/:id', verifyToken, authorizeRoles(['admin']), getEventById);
 router.get(
-  '/user/:userId',
+  '/user',
   verifyToken,
   authorizeRoles(['admin', 'event_organizer']),
   getEventByUserId
 );
+router.get('/:id', verifyToken, authorizeRoles(['admin']), getEventById);
 router.post(
   '/',
   verifyToken,
