@@ -3,6 +3,13 @@ const User = db.User;
 const bcrypt = require('bcrypt');
 
 module.exports = {
+  testRoute: async (req, res) => {
+    try {
+      res.status(200).json({ test: 'test' });
+    } catch (error) {
+      res.status(500).json({ msg: error.message });
+    }
+  },
   getAllUsers: async (req, res) => {
     try {
       // find
