@@ -73,7 +73,7 @@ module.exports = {
   },
   getEventByUserId: async (req, res) => {
     try {
-      const { userId } = req.params;
+      const userId = req.user.id;
       // Memverifikasi token JWT sebelum melanjutkan
       if (!req.user || req.user.id != userId) {
         return res.status(401).json({ error: 'Unauthorized access' });
