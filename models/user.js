@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       User.hasMany(models.Event, { foreignKey: 'userId' });
       User.hasMany(models.AuditionRegistration, { foreignKey: 'userId' });
+      User.hasMany(models.LiveRegistration, { foreignKey: 'userId' });
     }
   }
   User.init(
