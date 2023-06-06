@@ -1,9 +1,19 @@
+require('dotenv').config();
 const db = require('../models');
 const Event = db.Event;
 const AuditionEvent = db.AuditionEvent;
 const LiveEvent = db.LiveEvent;
 const path = require('path');
 const fs = require('fs');
+const { Storage } = require('@google-cloud/storage');
+const upload = require('../middleware/uploadFileToGCS');
+
+const storage = new Storage({
+  projectId: process.env.GCLOUD_PROJECT,
+  keyFilename: process.env.KEYFILE_PATH,
+});
+
+const bucket = storage.bucket(process.env.CLOUD_BUCKET);
 
 module.exports = {
   getAllEvents: async (req, res) => {
@@ -93,91 +103,109 @@ module.exports = {
       res.status(500).json({ msg: error.message });
     }
   },
+
   createEvent: async (req, res) => {
     try {
-      const { name, location, date, status } = req.body;
-      const userId = req.user.id; // Assume authenticated user's ID is stored in req.user.id
-      let type = status;
+      // Proses pengunggahan file dengan middleware multer
+      upload(req, res, async (err) => {
+        if (err) {
+          console.error(err);
+          return res.status(400).json({ error: err.message });
+        }
 
-      // Validasi ukuran file poster
-      const posterFile = req.file;
-      if (!posterFile) {
-        return res.status(400).json({ error: 'Poster file is required' });
-      }
-      if (posterFile.size > 2 * 1024 * 1024) {
-        return res
-          .status(400)
-          .json({ error: 'Poster file size exceeds the limit' });
-      }
-      // Validasi format file poster
-      const allowedFormats = ['.jpg', '.jpeg', '.png'];
-      const fileExt = path.extname(posterFile.originalname).toLowerCase();
-      if (!allowedFormats.includes(fileExt)) {
-        return res.status(400).json({ error: 'Invalid poster file format' });
-      }
-      const timestamp = Date.now();
-      const uniqueId = Math.round(Math.random() * 1e9);
-      // Pindahkan file poster ke direktori yang diinginkan
-      // Define the destination folder path
-      const destinationDir = path.join(__dirname, '../public/poster-event');
+        // Lanjutkan dengan logika bisnis setelah pengunggahan file berhasil
+        const { name, location, date, status } = req.body;
+        const userId = req.user.id; // Assume authenticated user's ID is stored in req.user.id
 
-      const newFileName = `poster-${timestamp}-${uniqueId}${fileExt}`;
-      const newPath = path.join(destinationDir, newFileName);
-      // Check if the destination folder exists
-      if (!fs.existsSync(destinationDir)) {
-        // Create the destination folder if it doesn't exist
-        fs.mkdirSync(destinationDir, { recursive: true });
-      }
-      // Move the file to the destination folder
-      fs.renameSync(posterFile.path, newPath);
+        let type = status;
 
-      const event = await Event.create({
-        name,
-        location,
-        date,
-        poster: newFileName,
-        status,
-        userId,
+        if (!req.file) {
+          return res.status(400).json({ error: 'Poster file is required' });
+        }
+
+        // Dapatkan informasi file dari req.file
+        const { originalname, buffer, mimetype } = req.file;
+
+        // Proses penyimpanan file ke Google Cloud Storage
+        const newFileName = `${Date.now()}-${Math.round(
+          Math.random() * 1e9
+        )}-${originalname}`;
+        const blob = bucket.file(newFileName);
+        const blobStream = blob.createWriteStream({
+          metadata: {
+            contentType: mimetype,
+          },
+        });
+
+        blobStream.on('error', (err) => {
+          console.error(err);
+          res.status(500).json({ error: 'Failed to upload file' });
+        });
+
+        blobStream.on('finish', async () => {
+          try {
+            const fileUrl = `https://storage.googleapis.com/${bucket.name}/${newFileName}`;
+
+            // Simpan informasi event ke database
+            const event = await Event.create({
+              name,
+              location,
+              date,
+              poster: fileUrl,
+              status,
+              userId,
+            });
+
+            // Tangani jenis event (Audition atau Live)
+            if (type === 'Audition') {
+              const {
+                startDate,
+                endDate,
+                auditionNeeds,
+                salary,
+                requirements,
+                genre,
+                numberOfMusicians,
+                auditionStatus,
+              } = req.body;
+
+              const auditionEvent = await AuditionEvent.create({
+                startDate,
+                endDate,
+                auditionNeeds,
+                salary,
+                requirements,
+                genre,
+                numberOfMusicians,
+                auditionStatus,
+                eventId: event.id,
+              });
+
+              res.status(201).json({ event, auditionEvent });
+            } else if (type === 'Live') {
+              const { eventDate, ticketPrice, eventsCapacity, liveStatus } =
+                req.body;
+
+              const liveEvent = await LiveEvent.create({
+                eventDate,
+                ticketPrice,
+                eventsCapacity,
+                liveStatus,
+                eventId: event.id,
+              });
+
+              res.status(201).json({ event, liveEvent });
+            } else {
+              res.status(400).json({ error: 'Invalid event type' });
+            }
+          } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Failed to create event' });
+          }
+        });
+
+        blobStream.end(buffer);
       });
-
-      if (type === 'Audition') {
-        const {
-          startDate,
-          endDate,
-          auditionNeeds,
-          salary,
-          requirements,
-          genre,
-          numberOfMusicians,
-          auditionStatus,
-        } = req.body;
-
-        const auditionEvent = await AuditionEvent.create({
-          startDate,
-          endDate,
-          auditionNeeds,
-          salary,
-          requirements,
-          genre,
-          numberOfMusicians,
-          auditionStatus,
-          eventId: event.id,
-        });
-
-        res.status(201).json({ data: { event, auditionEvent } });
-      } else if (type === 'Live') {
-        const { eventDate, ticketPrice, eventsCapacity, liveStatus } = req.body;
-
-        const liveEvent = await LiveEvent.create({
-          eventDate,
-          ticketPrice,
-          eventsCapacity,
-          liveStatus,
-          eventId: event.id,
-        });
-
-        res.status(201).json({ data: { event, liveEvent } });
-      }
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Failed to create event' });
@@ -185,10 +213,7 @@ module.exports = {
   },
   updateEvent: async (req, res) => {
     try {
-      const { name, location, date, status } = req.body;
       const { id } = req.params;
-      let type = status;
-
       const userId = req.user.id; // Assume authenticated user's ID is stored in req.user.id
 
       const event = await Event.findByPk(id);
@@ -202,82 +227,166 @@ module.exports = {
         return res.status(403).json({ error: 'Unauthorized' });
       }
 
-      // Validasi ukuran file poster
-      const posterFile = req.file;
-      if (posterFile) {
-        if (posterFile.size > 2 * 1024 * 1024) {
-          return res
-            .status(400)
-            .json({ error: 'Poster file size exceeds the limit' });
+      // Proses pengunggahan file dengan middleware multer
+      upload(req, res, async (err) => {
+        if (err) {
+          console.error(err);
+          return res.status(400).json({ error: err.message });
         }
-        // Validasi format file poster
-        const allowedFormats = ['.jpg', '.jpeg', '.png'];
-        const fileExt = path.extname(posterFile.originalname).toLowerCase();
-        if (!allowedFormats.includes(fileExt)) {
-          return res.status(400).json({ error: 'Invalid poster file format' });
-        }
+
+        // Lanjutkan dengan logika bisnis setelah pengunggahan file berhasil
+        const { name, location, date, status } = req.body;
+
+        let type = status;
 
         // Hapus gambar poster lama jika ada
-        if (event.poster) {
-          const oldPosterPath = path.join(__dirname, '../public', event.poster);
-          fs.unlinkSync(oldPosterPath);
+        if (req.file) {
+          const { originalname, buffer, mimetype } = req.file;
+
+          // Proses penyimpanan file ke Google Cloud Storage
+          const newFileName = `${Date.now()}-${Math.round(
+            Math.random() * 1e9
+          )}-${originalname}`;
+          const blob = bucket.file(newFileName);
+          const blobStream = blob.createWriteStream({
+            metadata: {
+              contentType: mimetype,
+            },
+          });
+
+          blobStream.on('error', (err) => {
+            console.error(err);
+            res.status(500).json({ error: 'Failed to upload file' });
+          });
+
+          blobStream.on('finish', async () => {
+            try {
+              const fileUrl = `https://storage.googleapis.com/${bucket.name}/${newFileName}`;
+
+              // Hapus gambar poster lama jika ada
+              if (event.poster) {
+                const oldPosterName = event.poster.split('/').pop();
+                const oldPosterFile = bucket.file(oldPosterName);
+                await oldPosterFile.delete();
+              }
+
+              // Update data event
+              event.name = name;
+              event.location = location;
+              event.date = date;
+              event.poster = fileUrl;
+              event.status = status;
+              await event.save();
+
+              // Hapus juga data terkait dari tabel AuditionEvent dan LiveEvent (jika ada)
+              await AuditionEvent.destroy({ where: { eventId: id } });
+              await LiveEvent.destroy({ where: { eventId: id } });
+
+              // Tangani jenis event (Audition atau Live)
+              if (type === 'Audition') {
+                const {
+                  startDate,
+                  endDate,
+                  auditionNeeds,
+                  salary,
+                  requirements,
+                  genre,
+                  numberOfMusicians,
+                  auditionStatus,
+                } = req.body;
+
+                const auditionEvent = await AuditionEvent.create({
+                  startDate,
+                  endDate,
+                  auditionNeeds,
+                  salary,
+                  requirements,
+                  genre,
+                  numberOfMusicians,
+                  auditionStatus,
+                  eventId: event.id,
+                });
+
+                res.status(200).json({ event, auditionEvent });
+              } else if (type === 'Live') {
+                const { eventDate, ticketPrice, eventsCapacity, liveStatus } =
+                  req.body;
+
+                const liveEvent = await LiveEvent.create({
+                  eventDate,
+                  ticketPrice,
+                  eventsCapacity,
+                  liveStatus,
+                  eventId: event.id,
+                });
+
+                res.status(200).json({ event, liveEvent });
+              } else {
+                res.status(400).json({ error: 'Invalid event type' });
+              }
+            } catch (error) {
+              console.error(error);
+              res.status(500).json({ error: 'Failed to update event' });
+            }
+          });
+
+          blobStream.end(buffer);
+        } else {
+          // Jika tidak ada file yang diunggah, hanya update data event
+          event.name = name;
+          event.location = location;
+          event.date = date;
+          event.status = status;
+          await event.save();
+
+          // Hapus juga data terkait dari tabel AuditionEvent dan LiveEvent (jika ada)
+          await AuditionEvent.destroy({ where: { eventId: id } });
+          await LiveEvent.destroy({ where: { eventId: id } });
+
+          // Tangani jenis event (Audition atau Live)
+          if (type === 'Audition') {
+            const {
+              startDate,
+              endDate,
+              auditionNeeds,
+              salary,
+              requirements,
+              genre,
+              numberOfMusicians,
+              auditionStatus,
+            } = req.body;
+
+            const auditionEvent = await AuditionEvent.create({
+              startDate,
+              endDate,
+              auditionNeeds,
+              salary,
+              requirements,
+              genre,
+              numberOfMusicians,
+              auditionStatus,
+              eventId: event.id,
+            });
+
+            res.status(200).json({ event, auditionEvent });
+          } else if (type === 'Live') {
+            const { eventDate, ticketPrice, eventsCapacity, liveStatus } =
+              req.body;
+
+            const liveEvent = await LiveEvent.create({
+              eventDate,
+              ticketPrice,
+              eventsCapacity,
+              liveStatus,
+              eventId: event.id,
+            });
+
+            res.status(200).json({ event, liveEvent });
+          } else {
+            res.status(400).json({ error: 'Invalid event type' });
+          }
         }
-
-        // Pindahkan file poster baru ke direktori yang diinginkan
-        const timestamp = Date.now();
-        const uniqueId = Math.round(Math.random() * 1e9);
-        const destinationDir = path.join(__dirname, '../public');
-        const newFileName = `poster-${timestamp}-${uniqueId}${fileExt}`;
-        const newPath = path.join(destinationDir, newFileName);
-        fs.renameSync(posterFile.path, newPath);
-
-        // Update data event
-        event.poster = newFileName;
-      }
-
-      // Update data event
-      event.name = name;
-      event.location = location;
-      event.date = date;
-      event.status = status;
-      await event.save();
-
-      if (type === 'Audition') {
-        const {
-          startDate,
-          endDate,
-          auditionNeeds,
-          salary,
-          requirements,
-          genre,
-          numberOfMusicians,
-          auditionStatus,
-        } = req.body;
-
-        const auditionEvent = await AuditionEvent.create({
-          startDate,
-          endDate,
-          auditionNeeds,
-          salary,
-          requirements,
-          genre,
-          numberOfMusicians,
-          auditionStatus,
-          eventId: event.id,
-        });
-        res.status(200).json({ data: { event, auditionEvent } });
-      } else if (type === 'Live') {
-        const { eventDate, ticketPrice, eventsCapacity, liveStatus } = req.body;
-
-        const liveEvent = await LiveEvent.create({
-          eventDate,
-          ticketPrice,
-          eventsCapacity,
-          liveStatus,
-          eventId: event.id,
-        });
-        res.status(200).json({ data: { event, liveEvent } });
-      }
+      });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Failed to update event' });
@@ -301,8 +410,9 @@ module.exports = {
 
       // Hapus gambar poster jika ada
       if (event.poster) {
-        const posterPath = path.join(__dirname, '../public', event.poster);
-        fs.unlinkSync(posterPath);
+        const posterFileName = event.poster.split('/').pop();
+        const posterFileRef = bucket.file(posterFileName);
+        await posterFileRef.delete();
       }
 
       // Hapus event dari database
