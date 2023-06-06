@@ -1,5 +1,5 @@
 const express = require('express');
-const upload = require('../middleware/multerConfig.js');
+const upload = require('../middleware/uploadFileToGCS.js');
 
 const {
   getAllEvents,
@@ -20,6 +20,8 @@ const {
   getAllLiveRegistrationsByUserId,
 } = require('../controllers/liveRegistration.js');
 const { testRoute } = require('../controllers/userController.js');
+const uploadFileToGCS = require('../middleware/uploadFileToGCS.js');
+const eventController = require('../controllers/eventController.js');
 
 const router = express.Router();
 
@@ -67,25 +69,31 @@ router.get(
   getEventByUserId
 );
 router.get('/:id', verifyToken, authorizeRoles(['admin']), getEventById);
+// router.post(
+//   '/',
+//   verifyToken,
+//   authorizeRoles(['admin', 'event_organizer']),
+// upload.single('poster_event'),
+//   createEvent
+// );
 router.post(
   '/',
   verifyToken,
   authorizeRoles(['admin', 'event_organizer']),
-  upload.single('poster_event'),
-  createEvent
+  eventController.createEvent
 );
 router.post(
   '/:auditionEventId/audition-registrations',
   verifyToken,
   authorizeRoles(['admin', 'event_organizer']),
-  upload.single('photo'),
+  // upload.single('photo'),
   createAuditionRegistration
 );
 router.patch(
   '/:id',
   verifyToken,
   authorizeRoles(['admin', 'event_organizer']),
-  upload.single('poster'),
+  // upload.single('poster'),
   updateEvent
 );
 router.delete(
