@@ -68,7 +68,12 @@ router.get(
   authorizeRoles(['admin', 'event_organizer']),
   getEventByUserId
 );
-router.get('/:id', verifyToken, authorizeRoles(['admin']), getEventById);
+router.get(
+  '/:id',
+  verifyToken,
+  authorizeRoles(['admin', 'event_organizer']),
+  getEventById
+);
 // router.post(
 //   '/',
 //   verifyToken,
