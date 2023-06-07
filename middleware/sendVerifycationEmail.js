@@ -18,7 +18,7 @@ exports.sendVerificationEmail = (email, userId) => {
     from: 'sendm2896@gmail.com',
     to: email,
     subject: 'Verify your email address',
-    html: `Please click this link to verify your email: <a href="${config.url}/verify/${encryptedID}">${config.url}/verify/${encryptedID}</a> <br/>jika tidak bisa di klik mohon untuk mengcopy link dan buka di browser anda`,
+    html: `Please click this link to verify your email: <a href="${config.url}/auth/verify/${encryptedID}">${config.url}/verify/${encryptedID}</a> <br/>jika tidak bisa di klik mohon untuk mengcopy link dan buka di browser anda`,
   };
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
