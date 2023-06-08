@@ -32,6 +32,7 @@ router.get(
   authorizeRoles(['admin', 'event_organizer', 'user']),
   getAllEvents
 );
+router.get('/getEventForMl', getAllEvents);
 router.get(
   '/live/live-registrations/:userId',
   verifyToken,
