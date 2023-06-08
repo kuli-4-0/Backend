@@ -23,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
       poster: DataTypes.STRING,
       status: DataTypes.ENUM('Audition', 'Live'),
       userId: DataTypes.INTEGER,
+      genre: DataTypes.STRING,
     },
     {
       sequelize,

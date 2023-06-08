@@ -17,19 +17,41 @@ const bucket = storage.bucket(process.env.CLOUD_BUCKET);
 
 module.exports = {
   getAllEvents: async (req, res) => {
+    const { genre } = req.query;
+
     try {
-      const events = await Event.findAll({
-        include: [
-          {
-            model: AuditionEvent,
-            required: false,
+      let events;
+
+      if (genre) {
+        events = await Event.findAll({
+          include: [
+            {
+              model: AuditionEvent,
+              required: false,
+            },
+            {
+              model: LiveEvent,
+              required: false,
+            },
+          ],
+          where: {
+            genre: genre,
           },
-          {
-            model: LiveEvent,
-            required: false,
-          },
-        ],
-      });
+        });
+      } else {
+        events = await Event.findAll({
+          include: [
+            {
+              model: AuditionEvent,
+              required: false,
+            },
+            {
+              model: LiveEvent,
+              required: false,
+            },
+          ],
+        });
+      }
 
       res.status(200).json({ data: events });
     } catch (error) {

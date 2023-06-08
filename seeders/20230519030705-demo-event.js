@@ -26,6 +26,7 @@ module.exports = {
           userId: 1,
           createdAt: new Date(),
           updatedAt: new Date(),
+          genre: 'rock',
         },
         {
           name: 'Event Admin 2',
@@ -36,6 +37,7 @@ module.exports = {
           userId: 1,
           createdAt: new Date(),
           updatedAt: new Date(),
+          genre: 'pop',
         },
         {
           name: 'Event Organizer Event 1',
@@ -46,6 +48,7 @@ module.exports = {
           userId: 4,
           createdAt: new Date(),
           updatedAt: new Date(),
+          genre: 'Jazz',
         },
         {
           name: 'Event Organizer Event 2',
@@ -56,6 +59,7 @@ module.exports = {
           userId: 4,
           createdAt: new Date(),
           updatedAt: new Date(),
+          genre: 'Jazz',
         },
       ],
       {}
