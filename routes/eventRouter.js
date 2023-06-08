@@ -26,13 +26,7 @@ const eventController = require('../controllers/eventController.js');
 const router = express.Router();
 
 // Event routes
-router.get(
-  '/',
-  verifyToken,
-  authorizeRoles(['admin', 'event_organizer', 'user']),
-  getAllEvents
-);
-router.get('/getEventForMl', getAllEvents);
+router.get('/geteventforml', getAllEvents);
 router.get(
   '/live/live-registrations/:userId',
   verifyToken,
@@ -50,6 +44,12 @@ router.get(
   verifyToken,
   authorizeRoles(['admin', 'event_organizer', 'user']),
   getAllLiveEvents
+);
+router.get(
+  '/',
+  verifyToken,
+  authorizeRoles(['admin', 'event_organizer', 'user']),
+  getAllEvents
 );
 router.post(
   '/live/:eventId/live-registrations',
