@@ -19,6 +19,8 @@ module.exports = (sequelize, DataTypes) => {
       ticketPrice: DataTypes.FLOAT,
       eventsCapacity: DataTypes.INTEGER,
       liveStatus: DataTypes.ENUM('available', 'full', 'finished'),
+      duration: DataTypes.INTEGER,
+      musicianName: DataTypes.STRING,
     },
     {
       sequelize,

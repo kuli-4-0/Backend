@@ -281,6 +281,28 @@ module.exports = {
           updatedAt: new Date(),
           genre: 'Dangdut',
         },
+        {
+          name: 'Cello Celebration',
+          location: 'Event Organizer Location',
+          date: new Date('2023-05-20'),
+          poster: 'https://storage.googleapis.com/elise-bucket/default.jpg',
+          status: 'Live',
+          userId: 4,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          genre: 'Pop',
+        },
+        {
+          name: 'SuperSonics',
+          location: 'Event Organizer Location',
+          date: new Date('2023-05-20'),
+          poster: 'https://storage.googleapis.com/elise-bucket/default.jpg',
+          status: 'Live',
+          userId: 4,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          genre: 'Pop',
+        },
       ],
       {}
     );

@@ -87,19 +87,14 @@ module.exports = {
       }
 
       const eventData = events.map((event) => ({
+        id_user: event.userId,
         id_event: event.id,
         nama_event: event.name,
-        location: event.location,
-        date: event.date,
-        poster: event.poster,
-        status: event.status,
-        id_event_organizer: event.userId,
-        genre: event.genre,
-        Live_id: event.LiveEvent.id,
-        eventDate: event.LiveEvent.eventDate,
         harga_tiket: event.LiveEvent.ticketPrice,
-        eventsCapacity: event.LiveEvent.eventsCapacity,
-        liveStatus: event.LiveEvent.liveStatus,
+        durasi: event.LiveEvent.duration,
+        genre: event.genre,
+        nama_musisi: event.LiveEvent.musicianName,
+        id_event_organizer: event.userId,
       }));
 
       res.status(200).json({ data: eventData });
