@@ -26,7 +26,7 @@ const eventController = require('../controllers/eventController.js');
 const router = express.Router();
 
 // Event routes
-router.get('/geteventforml', getAllEvents);
+router.get('/geteventforml', eventController.getAllEventLiveForMl);
 router.get(
   '/live/live-registrations/:userId',
   verifyToken,

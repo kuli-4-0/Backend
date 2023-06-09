@@ -22,7 +22,6 @@ module.exports = (sequelize, DataTypes) => {
       auditionNeeds: DataTypes.STRING,
       salary: DataTypes.FLOAT,
       requirements: DataTypes.STRING,
-      genre: DataTypes.STRING,
       numberOfMusicians: DataTypes.INTEGER,
       auditionStatus: DataTypes.ENUM('ongoing', 'finished'),
     },

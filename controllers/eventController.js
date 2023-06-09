@@ -59,6 +59,55 @@ module.exports = {
       res.status(500).json({ error: 'Failed to fetch events' });
     }
   },
+  getAllEventLiveForMl: async (req, res) => {
+    const { genre } = req.query;
+
+    try {
+      let events;
+
+      if (genre) {
+        events = await Event.findAll({
+          include: [
+            {
+              model: LiveEvent,
+              required: true,
+            },
+          ],
+          where: { genre: genre },
+        });
+      } else {
+        events = await Event.findAll({
+          include: [
+            {
+              model: LiveEvent,
+              required: true,
+            },
+          ],
+        });
+      }
+
+      const eventData = events.map((event) => ({
+        id_event: event.id,
+        nama_event: event.name,
+        location: event.location,
+        date: event.date,
+        poster: event.poster,
+        status: event.status,
+        id_event_organizer: event.userId,
+        genre: event.genre,
+        Live_id: event.LiveEvent.id,
+        eventDate: event.LiveEvent.eventDate,
+        harga_tiket: event.LiveEvent.ticketPrice,
+        eventsCapacity: event.LiveEvent.eventsCapacity,
+        liveStatus: event.LiveEvent.liveStatus,
+      }));
+
+      res.status(200).json({ data: eventData });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Failed to fetch live events' });
+    }
+  },
   getAllAuditionEvents: async (req, res) => {
     try {
       const events = await Event.findAll({
@@ -136,7 +185,7 @@ module.exports = {
         }
 
         // Lanjutkan dengan logika bisnis setelah pengunggahan file berhasil
-        const { name, location, date, status } = req.body;
+        const { name, location, date, status, genre } = req.body;
         const userId = req.user.id; // Assume authenticated user's ID is stored in req.user.id
 
         let type = status;
@@ -176,6 +225,7 @@ module.exports = {
               poster: fileUrl,
               status,
               userId,
+              genre
             });
 
             // Tangani jenis event (Audition atau Live)
@@ -186,7 +236,6 @@ module.exports = {
                 auditionNeeds,
                 salary,
                 requirements,
-                genre,
                 numberOfMusicians,
                 auditionStatus,
               } = req.body;
@@ -197,7 +246,6 @@ module.exports = {
                 auditionNeeds,
                 salary,
                 requirements,
-                genre,
                 numberOfMusicians,
                 auditionStatus,
                 eventId: event.id,

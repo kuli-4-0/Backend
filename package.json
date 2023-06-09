@@ -20,9 +20,11 @@
   "scripts": {
     "start:prod": "set NODE_ENV=production&& node app.js",
     "start:dev": "nodemon app",
+    "migrate:status":"npx sequelize-cli db:migrate:status",
     "migrate:up": "npx sequelize-cli db:migrate",
     "migrate:up:prod": "set NODE_ENV=production&& npx sequelize-cli db:migrate",
     "migrate:undo": "npx sequelize-cli db:migrate:undo",
+    "migrate:undo:filename": "npx sequelize-cli db:migrate:undo --name 20230608155116-add_genre_to_events.js",
     "migrate:undo:all": "npx sequelize-cli db:migrate:undo:all",
     "migrate:undo:all:prod": "set NODE_ENV=production&& npx sequelize-cli db:migrate:undo:all",
     "seed:up": "npx sequelize-cli db:seed:all",
