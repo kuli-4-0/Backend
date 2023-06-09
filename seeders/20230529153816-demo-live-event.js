@@ -35,6 +35,186 @@ module.exports = {
           createdAt: new Date(),
           updatedAt: new Date(),
         },
+        {
+          eventDate: new Date(),
+          ticketPrice: 19.99,
+          eventsCapacity: 200,
+          liveStatus: 'available',
+          eventId: 5, // ID event yang sesuai
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          eventDate: new Date(),
+          ticketPrice: 19.99,
+          eventsCapacity: 200,
+          liveStatus: 'available',
+          eventId: 6, // ID event yang sesuai
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          eventDate: new Date(),
+          ticketPrice: 19.99,
+          eventsCapacity: 200,
+          liveStatus: 'available',
+          eventId: 7, // ID event yang sesuai
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          eventDate: new Date(),
+          ticketPrice: 19.99,
+          eventsCapacity: 200,
+          liveStatus: 'available',
+          eventId: 8, // ID event yang sesuai
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          eventDate: new Date(),
+          ticketPrice: 19.99,
+          eventsCapacity: 200,
+          liveStatus: 'available',
+          eventId: 9, // ID event yang sesuai
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          eventDate: new Date(),
+          ticketPrice: 19.99,
+          eventsCapacity: 200,
+          liveStatus: 'available',
+          eventId: 10, // ID event yang sesuai
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          eventDate: new Date(),
+          ticketPrice: 19.99,
+          eventsCapacity: 200,
+          liveStatus: 'available',
+          eventId: 11, // ID event yang sesuai
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          eventDate: new Date(),
+          ticketPrice: 19.99,
+          eventsCapacity: 200,
+          liveStatus: 'available',
+          eventId: 12, // ID event yang sesuai
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          eventDate: new Date(),
+          ticketPrice: 19.99,
+          eventsCapacity: 200,
+          liveStatus: 'available',
+          eventId: 13, // ID event yang sesuai
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          eventDate: new Date(),
+          ticketPrice: 19.99,
+          eventsCapacity: 200,
+          liveStatus: 'available',
+          eventId: 14, // ID event yang sesuai
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          eventDate: new Date(),
+          ticketPrice: 19.99,
+          eventsCapacity: 200,
+          liveStatus: 'available',
+          eventId: 15, // ID event yang sesuai
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          eventDate: new Date(),
+          ticketPrice: 19.99,
+          eventsCapacity: 200,
+          liveStatus: 'available',
+          eventId: 16, // ID event yang sesuai
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          eventDate: new Date(),
+          ticketPrice: 19.99,
+          eventsCapacity: 200,
+          liveStatus: 'available',
+          eventId: 17, // ID event yang sesuai
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          eventDate: new Date(),
+          ticketPrice: 19.99,
+          eventsCapacity: 200,
+          liveStatus: 'available',
+          eventId: 18, // ID event yang sesuai
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          eventDate: new Date(),
+          ticketPrice: 19.99,
+          eventsCapacity: 200,
+          liveStatus: 'available',
+          eventId: 19, // ID event yang sesuai
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          eventDate: new Date(),
+          ticketPrice: 19.99,
+          eventsCapacity: 200,
+          liveStatus: 'available',
+          eventId: 20, // ID event yang sesuai
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          eventDate: new Date(),
+          ticketPrice: 19.99,
+          eventsCapacity: 200,
+          liveStatus: 'available',
+          eventId: 21, // ID event yang sesuai
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          eventDate: new Date(),
+          ticketPrice: 19.99,
+          eventsCapacity: 200,
+          liveStatus: 'available',
+          eventId: 22, // ID event yang sesuai
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          eventDate: new Date(),
+          ticketPrice: 19.99,
+          eventsCapacity: 200,
+          liveStatus: 'available',
+          eventId: 23, // ID event yang sesuai
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {
+          eventDate: new Date(),
+          ticketPrice: 19.99,
+          eventsCapacity: 200,
+          liveStatus: 'available',
+          eventId: 24, // ID event yang sesuai
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
       ],
       {}
     );
