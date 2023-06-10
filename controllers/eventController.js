@@ -97,6 +97,7 @@ module.exports = {
         id_event_organizer: event.userId,
         poster: event.poster,
         date: event.date,
+        location: event.location,
       }));
 
       res.status(200).json({ data: eventData });
