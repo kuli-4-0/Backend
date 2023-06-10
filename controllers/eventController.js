@@ -95,6 +95,8 @@ module.exports = {
         genre: event.genre,
         nama_musisi: event.LiveEvent.musicianName,
         id_event_organizer: event.userId,
+        poster: event.poster,
+        date: event.date,
       }));
 
       res.status(200).json({ data: eventData });
@@ -220,7 +222,7 @@ module.exports = {
               poster: fileUrl,
               status,
               userId,
-              genre
+              genre,
             });
 
             // Tangani jenis event (Audition atau Live)
