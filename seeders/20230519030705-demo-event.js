@@ -147,7 +147,7 @@ module.exports = {
           userId: 4,
           createdAt: new Date(),
           updatedAt: new Date(),
-          genre: 'R&B',
+          genre: 'Pop',
         },
         {
           name: 'Musical Celebration',

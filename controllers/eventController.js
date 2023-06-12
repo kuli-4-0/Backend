@@ -7,6 +7,7 @@ const path = require('path');
 const fs = require('fs');
 const { Storage } = require('@google-cloud/storage');
 const upload = require('../middleware/uploadFileToGCS');
+const axios = require('axios');
 
 const storage = new Storage({
   projectId: process.env.GCLOUD_PROJECT,
@@ -106,6 +107,80 @@ module.exports = {
       res.status(500).json({ error: 'Failed to fetch live events' });
     }
   },
+  getAllGenres: async (req, res) => {
+    try {
+      const genres = await Event.findAll({
+        attributes: ['genre'],
+        include: [
+          {
+            model: LiveEvent,
+            required: true,
+          },
+        ],
+        group: ['genre'],
+      });
+
+      const genreList = genres.map((event) => event.genre);
+
+      res.status(200).json({ genres: genreList });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Failed to fetch genres' });
+    }
+  },
+  getAllDataFromML: async (req, res) => {
+    try {
+      const genres = await Event.findAll({
+        attributes: ['genre'],
+        include: [
+          {
+            model: LiveEvent,
+            required: true,
+          },
+        ],
+        group: ['genre'],
+      });
+
+      const genreList = genres.map((event) => event.genre);
+
+      // Menampilkan semua genre
+      genreList.forEach((genre) => {
+        let data = JSON.stringify({
+          id_user: '1',
+          genre: genre,
+        });
+
+        let config = {
+          method: 'post',
+          maxBodyLength: Infinity,
+          url: 'https://myservice-brcxr6bfxq-uc.a.run.app/predict',
+          data: data,
+        };
+
+        axios
+          .request(config)
+          .then((response) => {
+            const filePath = path.join(__dirname, `${genre}.json`);
+            fs.writeFile(filePath, JSON.stringify(response.data), (err) => {
+              if (err) {
+                console.error(err);
+              } else {
+                console.log(`File ${genre}.json berhasil disimpan.`);
+              }
+            });
+          })
+          .catch((error) => {
+            console.log(error);
+            // Handle error
+          });
+      });
+
+      res.status(200).json({ genres: genreList });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Failed to fetch genres' });
+    }
+  },
   getAllAuditionEvents: async (req, res) => {
     try {
       const events = await Event.findAll({
@@ -120,7 +195,7 @@ module.exports = {
           },
         ],
         where: {
-          status: 'Live', // Menambahkan kondisi status
+          status: 'Audition', // Menambahkan kondisi status
         },
       });
 

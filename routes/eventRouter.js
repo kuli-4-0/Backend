@@ -27,6 +27,8 @@ const router = express.Router();
 
 // Event routes
 router.get('/geteventforml', eventController.getAllEventLiveForMl);
+router.get('/getallgenres', eventController.getAllGenres);
+router.get('/getalldatafromml', eventController.getAllDataFromML);
 router.get(
   '/live/live-registrations/:userId',
   verifyToken,
