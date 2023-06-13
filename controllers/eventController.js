@@ -406,8 +406,12 @@ module.exports = {
             try {
               const fileUrl = `https://storage.googleapis.com/${bucket.name}/${newFileName}`;
 
-              // Hapus gambar poster lama jika ada
-              if (event.poster) {
+              // Hapus gambar poster lama jika bukan default.jpg
+              if (
+                event.poster &&
+                event.poster !=
+                  'https://storage.googleapis.com/elise-bucket/default.jpg'
+              ) {
                 const oldPosterName = event.poster.split('/').pop();
                 const oldPosterFile = bucket.file(oldPosterName);
                 await oldPosterFile.delete();
