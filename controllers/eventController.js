@@ -114,10 +114,11 @@ module.exports = {
         include: [
           {
             model: LiveEvent,
+            attributes: [],
             required: true,
           },
         ],
-        group: ['genre'],
+        group: ['Event.genre'],
       });
 
       const genreList = genres.map((event) => event.genre);
